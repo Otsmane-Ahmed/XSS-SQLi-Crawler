@@ -48,7 +48,7 @@ PAYLOADS = {
 # Track tested URLs and parameters to avoid duplicates
 tested_urls = set()
 
-# List of User-Agent headers
+# List of UserAgent headers
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15",
@@ -97,7 +97,7 @@ def crawl(start_url, max_depth=2):
         visited.add(url)
         try:
             headers = {"User-Agent": get_random_user_agent()}
-            response = session.get(url, headers=headers, timeout=30)  # Increased timeout
+            response = session.get(url, headers=headers, timeout=30)  #u can Increased timeout
             soup = BeautifulSoup(response.text, 'html.parser')
             
             for link in soup.find_all('a', href=True):
@@ -136,7 +136,7 @@ def test_sqli(url):
                     try:
                         headers = {"User-Agent": get_random_user_agent()}
                         start_time = time.time()
-                        response = session.get(test_url, headers=headers, timeout=30)  # Increased timeout
+                        response = session.get(test_url, headers=headers, timeout=30)  #u can  Increased timeout here toi
                         elapsed_time = time.time() - start_time
                         
                         # Check for error-based SQLi
