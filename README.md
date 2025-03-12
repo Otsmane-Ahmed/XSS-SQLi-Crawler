@@ -10,6 +10,7 @@ The **XSS & SQLi Crawler** is a security testing tool that scans all URLs of a t
 - **TOR Integration** – Routes all traffic through the **TOR network** for anonymity.
 - **Multi-Threading Support** – Enhances scanning speed by running multiple threads.
 - **User-Agent Randomization** – Mimics different browsers to avoid detection.
+- **Save & Load URLs** – Allows saving and reloading crawled URLs for future testing.
 
 ## Installation
 
@@ -33,19 +34,51 @@ sudo service tor start
 For Windows users, open the **TOR browser** and keep it running.
 
 ## Usage
+### Starting a New Scan
 To scan a website for vulnerabilities, use:
 
 ```bash
-python xss_sqli_crawler.py <target_url>
+python xss_sqli_crawler.py
 ```
 
-The script will crawl the target site, extract all internal URLs, and test them for **XSS** and **SQL Injection** vulnerabilities.
+You will be prompted to choose between starting a new scan or loading previously saved URLs.
 
-## Example Output
+**Example:**
 ```
-[*] Found 42 links.
-[+] SQLi vulnerability found in parameter 'id' at http://example.com/index.php?id=1'
-[+] XSS vulnerability found in parameter 'query' at http://example.com/search.php?query=<script>alert(1)</script>
+$ python xss_sqli_crawler.py
+Choose an option:
+1. Start a new scan
+2. Load URLs from a text file
+Enter your choice (1 or 2): 1
+Enter the website URL to scan (e.g., http://example.com): http://example.com
+[*] Starting new scan for http://example.com
+[DEBUG] Found link: http://example.com/page1
+[DEBUG] Found link: http://example.com/page2
+[*] Found 2 links
+[INFO] Saved 2 URLs to example_com_urls.txt
+[+] SQLi vulnerability found in parameter 'id' at http://example.com/page1?id=1'
+[+] XSS vulnerability found in path at http://example.com/page2/<script>alert(1)</script>
+```
+
+### Loading URLs from a File
+If you have previously scanned a website and saved the URLs, you can reload them for testing:
+
+```bash
+python xss_sqli_crawler.py
+```
+
+**Example:**
+```
+$ python xss_sqli_crawler.py
+Choose an option:
+1. Start a new scan
+2. Load URLs from a text file
+Enter your choice (1 or 2): 2
+Enter the path to the text file containing URLs: ./example_com_urls.txt
+[INFO] Loaded 2 URLs from ./example_com_urls.txt
+[*] Testing 2 loaded links
+[+] SQLi vulnerability found in parameter 'id' at http://example.com/page1?id=1'
+[+] XSS vulnerability found in path at http://example.com/page2/<script>alert(1)</script>
 ```
 
 ## Disclaimer
