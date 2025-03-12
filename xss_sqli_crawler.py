@@ -11,6 +11,7 @@ import socks
 import socket
 from stem import Signal
 from stem.control import Controller
+import os
 
 # Configure Tor proxy
 TOR_PROXY = "socks5h://localhost:9050"  # Use "socks5h" for DNS resolution through Tor
@@ -81,6 +82,25 @@ def rotate_tor_circuit():
         controller.signal(Signal.NEWNYM)
     print("[INFO] Rotated Tor circuit.")
 
+def save_urls_to_file(urls, website_name):
+    """Save URLs to a text file named after the website."""
+    filename = f"{website_name}_urls.txt"
+    with open(filename, 'w', encoding='utf-8') as f:
+        for url in urls:
+            f.write(f"{url}\n")
+    print(f"[INFO] Saved {len(urls)} URLs to {filename}")
+    return filename
+
+def load_urls_from_file(filename):
+    """Load URLs from a text file."""
+    if not os.path.exists(filename):
+        print(f"[ERROR] File {filename} not found!")
+        return []
+    with open(filename, 'r', encoding='utf-8') as f:
+        urls = [line.strip() for line in f if line.strip()]
+    print(f"[INFO] Loaded {len(urls)} URLs from {filename}")
+    return urls
+
 def crawl(start_url, max_depth=2):
     """Crawl the website to find all internal links without recursion."""
     visited = set()
@@ -97,7 +117,7 @@ def crawl(start_url, max_depth=2):
         visited.add(url)
         try:
             headers = {"User-Agent": get_random_user_agent()}
-            response = session.get(url, headers=headers, timeout=30)  #u can Increased timeout
+            response = session.get(url, headers=headers, timeout=30)  # Increased timeout
             soup = BeautifulSoup(response.text, 'html.parser')
             
             for link in soup.find_all('a', href=True):
@@ -136,7 +156,7 @@ def test_sqli(url):
                     try:
                         headers = {"User-Agent": get_random_user_agent()}
                         start_time = time.time()
-                        response = session.get(test_url, headers=headers, timeout=30)  #u can  Increased timeout here toi
+                        response = session.get(test_url, headers=headers, timeout=30)  # Increased timeout here too
                         elapsed_time = time.time() - start_time
                         
                         # Check for error-based SQLi
@@ -275,13 +295,34 @@ def test_links(links):
         t.join()
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("url", help="Target website")
-    args = parser.parse_args()
-    
-    links = crawl(args.url)
-    print(f"[*] Found {len(links)} links")
-    test_links(links)
+    # Remove argparse since we're handling input manually now
+    print("Choose an option:")
+    print("1. Start a new scan")
+    print("2. Load URLs from a text file")
+    choice = input("Enter your choice (1 or 2): ").strip()
+
+    if choice == "1":
+        url = input("Enter the website URL to scan (e.g., http://example.com): ").strip()
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "http://" + url  # Add default scheme if missing
+        website_name = urlparse(url).netloc.replace('.', '_')
+        print(f"[*] Starting new scan for {url}")
+        links = crawl(url)
+        print(f"[*] Found {len(links)} links")
+        if links:
+            save_urls_to_file(links, website_name)
+        test_links(links)
+    elif choice == "2":
+        filename = input("Enter the path to the text file containing URLs: ").strip()
+        links = load_urls_from_file(filename)
+        if links:
+            print(f"[*] Testing {len(links)} loaded links")
+            test_links(links)
+        else:
+            print("[ERROR] No links to test. Please check the file or start a new scan with option 1.")
+    else:
+        print("[ERROR] Invalid choice! Please select 1 or 2.")
+        return
 
 if __name__ == "__main__":
     main()
