@@ -84,5 +84,5 @@ Enter the path to the text file containing URLs: ./example_com_urls.txt
 ## Disclaimer
 This tool is intended **for educational and security research purposes only**. Unauthorized scanning of systems you do not own is **illegal and unethical**. The author is not responsible for any misuse of this tool.
 
-## License
-This project is released under the **MIT License**.
+
+ **Developed with  by Otsmane Ahmed**  
